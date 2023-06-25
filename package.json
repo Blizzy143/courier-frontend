@@ -1,0 +1,39 @@
+{
+  "name": "courier-frontend",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "cross-env APP_ENV=development vite",
+    "build": "cross-env APP_ENV=production vite build",
+    "preview": "cross-env vite preview"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.0.96",
+    "axios": "^1.1.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.28.0",
+    "eslint-plugin-vue": "^9.7.0",
+    "express": "^4.18.2",
+    "mysql2": "^3.3.3",
+    "roboto-fontface": "*",
+    "sequelize": "^6.31.1",
+    "vue": "^3.2.41",
+    "vue-router": "^4.1.6",
+    "vuetify": "^3.2.3",
+    "vuex": "^4.0.2",
+    "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "@mdi/js": "^7.0.96",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "vite": "^4.0.1",
+    "vite-plugin-vuetify": "^1.0.0-alpha.12",
+    "vue-cli-plugin-vuetify": "~2.5.8"
+  },
+  "type": "module",
+  "description": "This application allows users to create and maintain couriers. Please visit https://github.com/OC-ComputerScience/courier-backend for the backend repository.",
+  "main": "vite.config.js",
+  "author": "",
+  "license": "ISC"
+}
