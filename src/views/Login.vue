@@ -64,10 +64,7 @@ async function closeLogin() {
 }
 
 async function navigateToAdmin() {
-  // router.push({ name: "admin" });
-  snackbar.value.value = true;
-  snackbar.value.color = "success";
-  snackbar.value.text = "Navigation to admin page successful";
+  router.push({ name: "admin" });
 }
 
 
