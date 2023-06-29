@@ -13,6 +13,8 @@ const snackbar = ref({
 });
 
 const isLogin = ref(false);
+const isCreateAccount = ref(false);
+
 
 const user = ref({
   firstName: "",
@@ -23,7 +25,7 @@ const user = ref({
 });
 
 onMounted(async () => {
-  
+
 });
 
 
@@ -33,6 +35,23 @@ async function login() {
   snackbar.value.text = "Login successful";
   closeLogin();
   navigateToAdmin();
+}
+async function createAccount() {
+  snackbar.value.value = true;
+  snackbar.value.color = "success";
+  snackbar.value.text = "Account created";
+  closeCreateAccount();
+
+}
+
+
+async function openCreateAccount() {
+  isCreateAccount.value = true;
+}
+
+
+async function closeCreateAccount() {
+  isCreateAccount.value = false;
 }
 
 
@@ -65,35 +84,37 @@ function closeSnackBar() {
         <!-- -->
         <v-spacer></v-spacer>
         <v-btn color="secondary" @click="openLogin()">Login</v-btn>
+        <v-btn color="secondary" @click="openCreateAccount()">Create Account</v-btn>
+
       </v-app-bar>
 
 
       <v-row>
-          <v-col cols="12" md="6">
-            <v-card-title class="headline mb-2">Welcome to Courier delivery system</v-card-title>
-            <v-card-text>
-              <p>
-                Courier is a courier service that allows you to send and receive
-                packages from anywhere in the world.
-              </p>
-              <p>
-                Courier is a courier service that allows you to send and receive
-                packages from anywhere in the world.
-              </p>
-              <p>
-                Courier is a courier service that allows you to send and receive
-                packages from anywhere in the world.
-              </p>
-            </v-card-text>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-img :src="logo"></v-img>
-          </v-col>
-        </v-row>
+        <v-col cols="12" md="6">
+          <v-card-title class="headline mb-2">Welcome to Courier delivery system</v-card-title>
+          <v-card-text>
+            <p>
+              Courier is a courier service that allows you to send and receive
+              packages from anywhere in the world.
+            </p>
+            <p>
+              Courier is a courier service that allows you to send and receive
+              packages from anywhere in the world.
+            </p>
+            <p>
+              Courier is a courier service that allows you to send and receive
+              packages from anywhere in the world.
+            </p>
+          </v-card-text>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-img :src="logo"></v-img>
+        </v-col>
+      </v-row>
 
 
 
-      <v-dialog  v-model="isLogin" width="800">
+      <v-dialog v-model="isLogin" width="800">
         <v-card class="rounded-lg elevation-5">
           <v-card-title class="headline mb-2">Login </v-card-title>
           <v-card-text>
@@ -105,6 +126,27 @@ function closeSnackBar() {
             <v-spacer></v-spacer>
             <v-btn variant="flat" @click="closeLogin" color="secondary">Close</v-btn>
             <v-btn variant="flat" @click="login" color="primary">Login</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="isCreateAccount" width="800">
+        <v-card class="rounded-lg elevation-5">
+          <v-card-title class="headline mb-2">Create Account </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="user.firstName" label="First Name" required></v-text-field>
+
+            <v-text-field v-model="user.lastName" label="Last Name" required></v-text-field>
+
+            <v-text-field v-model="user.email" label="Email" required></v-text-field>
+            <v-text-field v-model="user.number" label="Number" required></v-text-field>
+
+            <v-text-field v-model="user.password" label="Password" type="password" required></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="flat" @click="closeCreateAccount" color="secondary">Close</v-btn>
+            <v-btn variant="flat" @click="createAccount" color="primary">Create Account</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
