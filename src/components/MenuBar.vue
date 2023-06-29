@@ -34,7 +34,7 @@ function logout() {
         {{ title }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-if="user === null" class="mx-2" :to="{ name: 'login' }">
+      <v-btn v-if="false" class="mx-2" :to="{ name: 'login' }">
         Login
       </v-btn>
       <!-- <v-btn  v-if=" user !== null && user.user_type === 'user'" :to="{ name: 'user-trips' }" class="mx-2">
