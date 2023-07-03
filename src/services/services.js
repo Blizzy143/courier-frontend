@@ -2,7 +2,7 @@ import axios from "axios";
 
 var baseurl = "";
 if (process.env.NODE_ENV === "development") {
-  baseurl = "http://localhost:3000/";
+  baseurl = "http://localhost:3000/courierapi/";
 } else {
   baseurl = "/courierapi/";
 }
