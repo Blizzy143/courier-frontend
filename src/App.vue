@@ -8,5 +8,6 @@ import MenuBar from "./components/MenuBar.vue";
     <v-main>
       <router-view />
     </v-main>
+    <v-footer> Footer </v-footer>
   </v-app>
 </template>

@@ -5,7 +5,7 @@ export default {
     return apiClient.get("users");
   },
   addUser(user) {
-    return apiClient.post("auth/register", user);
+    return apiClient.post("users/", user);
   },
   loginUser(user) {
     console.log(user);
@@ -23,4 +23,8 @@ export default {
   logoutUser() {
     return apiClient.post("auth/logout");
   },
+  getClerks() {
+    return apiClient.get("users/clerk");
+  }
+  
 };

@@ -3,6 +3,7 @@ import { onMounted } from "vue";
 import { ref, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import logo from "/icon.svg";
+import UserServices from "../services/UserServices";
 
 const router = useRouter();
 
@@ -30,11 +31,37 @@ onMounted(async () => {
 
 
 async function login() {
-  snackbar.value.value = true;
-  snackbar.value.color = "success";
-  snackbar.value.text = "Login successful";
-  closeLogin();
-  navigateToAdmin();
+  // validate user mail and password
+
+  if (user.value.email === "" || user.value.password == "") {
+    snackbar.value.value = true;
+    snackbar.value.color = "error";
+    snackbar.value.text = "Please enter email and password";
+  } else {
+    await UserServices.loginUser(user)
+      .then((response) => {
+        if (response.status === 200) {
+          // save user details to local storage
+          localStorage.setItem("user", JSON.stringify(response.data));
+          snackbar.value.value = true;
+          snackbar.value.color = "success";
+          snackbar.value.text = "Login successful";
+          if (response.data.user_role === "admin") {
+            closeLogin();
+            navigateToAdmin();
+          }
+        } else {
+          snackbar.value.value = true;
+          snackbar.value.color = "error";
+          snackbar.value.text = "Login failed";
+        }
+      })
+      .catch((error) => {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Login failed";
+      });
+  }
 }
 async function createAccount() {
   snackbar.value.value = true;
