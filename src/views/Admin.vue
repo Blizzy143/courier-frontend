@@ -6,6 +6,8 @@ import logo from "/icon.svg";
 import UserServices from "../services/UserServices.js";
 
 
+const router = useRouter();
+
 const snackbar = ref({
   value: false,
   color: "",
@@ -87,6 +89,30 @@ async function getClerks(){
 function closeSnackBar() {
   snackbar.value.value = false;
 }
+
+async function deleteClerk (temp){
+  temp.user_role = "deleted_clerk";
+  await UserServices.updateUser(temp)
+  .then((response) => {
+    if (response.status === 200) {
+      snackbar.value.value = true;
+      snackbar.value.color = "success";
+      snackbar.value.text = "Clerk deleted";
+      getClerks();
+    } else {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Clerk deletion failed";
+    }
+  })
+}
+
+async function logout() {
+// clear local storage
+localStorage.clear();
+// redirect to login
+router.push({ name: "login" });
+}
 </script>
 
 <template>
@@ -100,6 +126,7 @@ function closeSnackBar() {
         <v-btn color="secondary" @click="openCustomers()">Customers</v-btn>
         <v-btn color="secondary" @click="openClerks()">Clerks</v-btn>
         <v-btn color="secondary" @click="openCouriers()">Couriers</v-btn>
+        <v-btn color="secondary" @click="logout()">Logout</v-btn>
       </v-app-bar>
 
 
@@ -184,6 +211,7 @@ function closeSnackBar() {
               <th class="text-left">Name</th>
               <th class="text-left">Mail</th>
               <th class="text-left">Number</th>
+
             </tr>
           </thead>
           <tbody v-if="clerks">
@@ -192,6 +220,8 @@ function closeSnackBar() {
               <td>{{ temp.firstName }} {{ temp.lastName }}</td>
               <td>{{ temp.email }}</td>
               <td>{{ temp.number }}</td>
+              <td> <v-chip label @click="deleteClerk(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
+
             </tr>
           </tbody>
         </v-table>

@@ -108,8 +108,7 @@ function closeSnackBar() {
         <!-- -->
         <v-spacer></v-spacer>
         <v-btn color="secondary" @click="openLogin()">Login</v-btn>
-        <v-btn color="secondary" @click="openCreateAccount()">Create Account</v-btn>
-
+        <v-btn v-if="false" color="secondary" @click="openCreateAccount()">Create Account</v-btn>
       </v-app-bar>
 
 
