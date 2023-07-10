@@ -67,7 +67,13 @@ async function login() {
           if (response.data.user_role === "admin") {
             closeLogin();
             navigateToAdmin();
-          }
+          } else if (response.data.user_role === "courier") {
+            closeLogin();
+            router.push({ name: "courier" });
+          } else if (response.data.user_role === "clerk") {
+            closeLogin();
+            router.push({ name: "clerk" });
+          } 
         } else {
           snackbar.value.value = true;
           snackbar.value.color = "error";
@@ -75,9 +81,10 @@ async function login() {
         }
       })
       .catch((error) => {
+        console.log(error);
         snackbar.value.value = true;
         snackbar.value.color = "error";
-        snackbar.value.text = "Login failed";
+        snackbar.value.text = "Login failed "+ error.response.data.message;
       });
   }
 }

@@ -18,6 +18,11 @@ export default {
   },
   updateTicket(ticket) {
     return apiClient.put("tickets/" + ticket.id, ticket);
+  },
+
+  getCourierTickets(id) {
+    return apiClient.get("tickets/courier/" + id);
   }
+  
 
 };

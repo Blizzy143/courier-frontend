@@ -18,6 +18,16 @@ const router = createRouter({
       name: "ticket",
       component: () => import("./views/AddTicket.vue"),
     },
+    {
+      path: "/courier",
+      name: "courier",
+      component: () => import("./views/Courier.vue"),
+    },
+    {
+      path: "/clerk",
+      name: "clerk",
+      component: () => import("./views/Clerk.vue"),
+    },
   ],
 });
 
