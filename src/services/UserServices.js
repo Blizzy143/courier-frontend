@@ -8,7 +8,6 @@ export default {
     return apiClient.post("users/", user);
   },
   loginUser(user) {
-    console.log(user);
     return apiClient.post("auth/login", user.value, {
       headers: {
         Accept: "application/json",
