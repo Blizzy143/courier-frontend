@@ -28,6 +28,7 @@ onMounted(async () => {
   getClerks();
   getCompany();
   getCustomers();
+  getCouriers();
 });
 
 
@@ -252,6 +253,96 @@ async function updateCustomer() {
 }
 
 
+const couriers = ref([]);
+const addingCourier = ref(false);
+const updatingCouriers = ref(false);
+const selectedCourier = ref(null);
+
+const courier = ref({
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  number: "",
+  user_role: "courier"
+});
+
+async function getCouriers() {
+  await UserServices.getCouriers()
+    .then((response) => {
+      couriers.value = response.data;
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching couriers";
+    });
+}
+
+
+async function addCourier() {
+  await UserServices.addUser(courier.value)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Courier created";
+        addingCourier.value = false;
+        getCouriers();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Courier creation failed";
+      }
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Courier creation failed";
+    });
+}
+
+
+async function deleteCourier(temp) {
+  temp.user_role = "deleted_courier";
+  await UserServices.updateUser(temp)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Courier deleted";
+        getCouriers();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Courier deletion failed";
+      }
+    })
+}
+
+async function showUpdateCourier(temp) {
+  selectedCourier.value = temp;
+  updatingCouriers.value = true;
+}
+
+
+
+async function updateCourier() {
+  await UserServices.updateUser(selectedCourier.value)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Courier updated";
+        updatingCouriers.value = false;
+        getCouriers();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Courier update failed";
+      }
+    })
+}
 
 </script>
 
@@ -419,14 +510,15 @@ async function updateCustomer() {
 
             </tr>
           </thead>
-          <tbody v-if="clerks">
+          <tbody v-if="customers">
             <tr v-for="temp in customers" :key="temp.id">
               <td>{{ temp.id }}</td>
               <td>{{ temp.name }}</td>
               <td>{{ temp.number }}</td>
               <td>{{ temp.location }}</td>
               <td>{{ temp.delivery_instructions }}</td>
-              <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
+              <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip>
+              </td>
               <td> <v-chip label @click="deleteCustomer(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
 
             </tr>
@@ -441,7 +533,8 @@ async function updateCustomer() {
               <v-text-field v-model="customer.name" label="Name" required></v-text-field>
               <v-text-field v-model="customer.number" label="Number" required></v-text-field>
               <v-text-field v-model="customer.location" label="Location" required></v-text-field>
-              <v-text-field v-model="customer.delivery_instructions" label="Delivery instructions" required></v-text-field>
+              <v-text-field v-model="customer.delivery_instructions" label="Delivery instructions"
+                required></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -450,24 +543,105 @@ async function updateCustomer() {
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </template>
 
-      <v-dialog v-model="updatingCustomer" width="800">
+
+        <v-dialog v-model="updatingCustomer" width="800">
+        <v-card class="rounded-lg elevation-5">
+          <v-card-title class="headline mb-2">Create Customer </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="selectedCustomer.name" label="Name" required></v-text-field>
+            <v-text-field v-model="selectedCustomer.number" label="Number" required></v-text-field>
+            <v-text-field v-model="selectedCustomer.location" label="Location" required></v-text-field>
+            <v-text-field v-model="selectedCustomer.delivery_instructions" label="Delivery instructions"
+              required></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="flat" @click="updatingCustomer = false" color="secondary">Close</v-btn>
+            <v-btn variant="flat" @click="updateCustomer" color="primary">Submit</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      </template> 
+      
+      <template v-if="showing === 'couriers'" cols="12" justify="center">
+
+        <v-row class="my-5">
+          <v-col cols="8">
+            <h1>Couriers</h1>
+          </v-col>
+          <v-col class="d-flex justify-end" cols="4">
+            <v-btn color="accent" @click="addingCourier = true">Add</v-btn>
+          </v-col>
+        </v-row>
+        <v-table class="rounded-lg elevation-5">
+          <thead>
+            <tr>
+              <th class="text-left">Id</th>
+              <th class="text-left">Name</th>
+              <th class="text-left">Email</th>
+              <th class="text-left">Number</th>
+
+            </tr>
+          </thead>
+          <tbody v-if="couriers">
+            <tr v-for="temp in couriers" :key="temp.id">
+              <td>{{ temp.id }}</td>
+              <td>{{ temp.firstName }} {{ temp.lastName }}</td>
+              <td>{{ temp.email }}</td>
+              <td>{{ temp.number }}</td>
+
+              <td> <v-chip label @click="showUpdateCourier(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip>
+              </td>
+              <td> <v-chip label @click="deleteCourier(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
+
+            </tr>
+          </tbody>
+        </v-table>
+
+
+        <v-dialog v-model="addingCourier" width="800">
           <v-card class="rounded-lg elevation-5">
-            <v-card-title class="headline mb-2">Create Customer </v-card-title>
+            <v-card-title class="headline mb-2">Create Courier </v-card-title>
             <v-card-text>
-              <v-text-field v-model="selectedCustomer.name" label="Name" required></v-text-field>
-              <v-text-field v-model="selectedCustomer.number" label="Number" required></v-text-field>
-              <v-text-field v-model="selectedCustomer.location" label="Location" required></v-text-field>
-              <v-text-field v-model="selectedCustomer.delivery_instructions" label="Delivery instructions" required></v-text-field>
+              <v-text-field v-model="courier.firstName" label="First Name" required></v-text-field>
+
+              <v-text-field v-model="courier.lastName" label="Last Name" required></v-text-field>
+
+              <v-text-field v-model="courier.email" label="Email" required></v-text-field>
+              <v-text-field v-model="courier.number" label="Number" required></v-text-field>
+
+              <v-text-field v-model="courier.password" label="Password" type="password" required></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn variant="flat" @click="updatingCustomer = false" color="secondary">Close</v-btn>
-              <v-btn variant="flat" @click="updateCustomer" color="primary">Submit</v-btn>
+              <v-btn variant="flat" @click="addingCourier = false" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="addCourier" color="primary">Create</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+
+        <v-dialog v-model="updatingCouriers" width="800">
+        <v-card class="rounded-lg elevation-5">
+          <v-card-title class="headline mb-2">Update Courier </v-card-title>
+          <v-card-text>
+              <v-text-field v-model="selectedCourier.firstName" label="First Name" required></v-text-field>
+              <v-text-field v-model="selectedCourier.lastName" label="Last Name" required></v-text-field>
+              <v-text-field v-model="selectedCourier.email" label="Email" required></v-text-field>
+              <v-text-field v-model="selectedCourier.number" label="Number" required></v-text-field>
+            </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="flat" @click="updatingCouriers = false" color="secondary">Close</v-btn>
+            <v-btn variant="flat" @click="updateCourier" color="primary">Submit</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      </template>
+
 
 
 
@@ -504,5 +678,4 @@ async function updateCustomer() {
       </v-snackbar>
 
     </div>
-  </v-container>
-</template>
+  </v-container></template>

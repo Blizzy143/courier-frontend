@@ -27,6 +27,9 @@ export default {
   },
   getClerks() {
     return apiClient.get("users/clerk");
+  },
+  getCouriers() {
+    return apiClient.get("users/courier");
   }
   
 };
