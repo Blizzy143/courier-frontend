@@ -200,5 +200,7 @@ function closeSnackBar() {
         </template>
       </v-snackbar>
     </div>
+
   </v-container>
+
 </template>

@@ -81,6 +81,7 @@ async function addClerk() {
         snackbar.value.color = "success";
         snackbar.value.text = "Clerk created";
         addingClerk.value = false;
+        getClerks();
       } else {
         snackbar.value.value = true;
         snackbar.value.color = "error";
@@ -327,8 +328,6 @@ async function showUpdateCourier(temp) {
   updatingCouriers.value = true;
 }
 
-
-
 async function updateCourier() {
   await UserServices.updateUser(selectedCourier.value)
     .then((response) => {
@@ -346,6 +345,11 @@ async function updateCourier() {
     })
 }
 
+
+async function openAddTicket() {
+  router.push({ name: "ticket" });
+}
+
 </script>
 
 <template>
@@ -361,7 +365,6 @@ async function updateCourier() {
         <v-btn color="secondary" @click="openCouriers()">Couriers</v-btn>
         <v-btn color="secondary" @click="logout()">Logout</v-btn>
       </v-app-bar>
-
 
       <template v-if="company">
 
@@ -381,7 +384,6 @@ async function updateCourier() {
         </v-card>
       </template>
 
-
       <template v-if="showing === 'packages'" cols="12" justify="center">
 
         <v-row class="my-5">
@@ -389,7 +391,7 @@ async function updateCourier() {
             <h1>Packages</h1>
           </v-col>
           <v-col class="d-flex justify-end" cols="4">
-            <v-btn color="accent" @click="openAdd()">Add</v-btn>
+            <v-btn color="accent" @click="openAddTicket">Add</v-btn>
           </v-col>
         </v-row>
         <v-table class="rounded-lg elevation-5">
@@ -434,7 +436,6 @@ async function updateCourier() {
         </v-table>
 
       </template>
-
 
       <template v-if="showing === 'clerks'" cols="12" justify="center">
 
@@ -644,10 +645,6 @@ async function updateCourier() {
 
       </template>
 
-
-
-
-
       <v-dialog v-model="isupdateCompany" width="800">
         <v-card class="rounded-lg elevation-5">
           <v-card-title class="headline mb-2">Update company </v-card-title>
@@ -662,13 +659,11 @@ async function updateCourier() {
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn variant="flat" @click="closeUpdate = false" color="secondary">Close</v-btn>
+            <v-btn variant="flat" @click="isupdateCompany = false" color="secondary">Close</v-btn>
             <v-btn variant="flat" @click="updateCompany" color="primary">Update</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-
-
 
       <v-snackbar v-model="snackbar.value" rounded="pill">
         {{ snackbar.text }}

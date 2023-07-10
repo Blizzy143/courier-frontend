@@ -18,7 +18,6 @@ export default {
   },
   updateCustomer(customer) { 
     return apiClient.put("customers/" + customer.id, customer);
-  }
-  
-
+  },
+ 
 };
