@@ -4,6 +4,7 @@ import { ref, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import logo from "/icon.svg";
 import UserServices from "../services/UserServices.js";
+import AdminServices from "../services/AdminServices";
 
 
 const router = useRouter();
@@ -20,13 +21,32 @@ const user = ref({
   email: "",
   password: "",
   number: "",
-  user_role:"clerk"
+  user_role: "clerk"
 });
 
 onMounted(async () => {
-
   getClerks();
+  getCompany();
 });
+
+
+const company = ref(null)
+
+async function getCompany() {
+  await AdminServices.getCompanyDetails()
+    .then((response) => {
+      // store to local storage
+      localStorage.setItem("company", JSON.stringify(response.data[0]));
+      company.value = response.data[0];
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching company";
+    });
+}
+
+
 const showing = ref("home");
 
 async function openHome() {
@@ -51,67 +71,67 @@ async function openCouriers() {
 
 const addingClerk = ref(false);
 
-async function addClerk(){
+async function addClerk() {
   await UserServices.addUser(user.value)
-  .then((response) => {
-    if (response.status === 200) {
-      snackbar.value.value = true;
-      snackbar.value.color = "success";
-      snackbar.value.text = "Clerk created";
-      addingClerk.value = false;
-    } else {
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Clerk created";
+        addingClerk.value = false;
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Clerk creation failed";
+      }
+    })
+    .catch((error) => {
       snackbar.value.value = true;
       snackbar.value.color = "error";
       snackbar.value.text = "Clerk creation failed";
-    }
-  })
-  .catch((error) => {
-    snackbar.value.value = true;
-    snackbar.value.color = "error";
-    snackbar.value.text = "Clerk creation failed";
-  });
+    });
 }
 
 const clerks = ref([]);
 
-async function getClerks(){
+async function getClerks() {
   await UserServices.getClerks()
-  .then((response) => {
-   clerks.value = response.data;
-  })
-  .catch((error) => {
-    snackbar.value.value = true;
-    snackbar.value.color = "error";
-    snackbar.value.text = "Error fetching clerks";
-  });
+    .then((response) => {
+      clerks.value = response.data;
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching clerks";
+    });
 }
 
 function closeSnackBar() {
   snackbar.value.value = false;
 }
 
-async function deleteClerk (temp){
+async function deleteClerk(temp) {
   temp.user_role = "deleted_clerk";
   await UserServices.updateUser(temp)
-  .then((response) => {
-    if (response.status === 200) {
-      snackbar.value.value = true;
-      snackbar.value.color = "success";
-      snackbar.value.text = "Clerk deleted";
-      getClerks();
-    } else {
-      snackbar.value.value = true;
-      snackbar.value.color = "error";
-      snackbar.value.text = "Clerk deletion failed";
-    }
-  })
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Clerk deleted";
+        getClerks();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Clerk deletion failed";
+      }
+    })
 }
 
 async function logout() {
-// clear local storage
-localStorage.clear();
-// redirect to login
-router.push({ name: "login" });
+  // clear local storage
+  localStorage.clear();
+  // redirect to login
+  router.push({ name: "login" });
 }
 </script>
 
@@ -130,16 +150,17 @@ router.push({ name: "login" });
       </v-app-bar>
 
 
-      <v-row v-if="showing === 'home'" cols="12" justify="center">
-        <v-col cols="12" md="8">
-          <h1>Courier delivery service</h1>
-          <p>
-            Courier is a courier service that allows you to send and receive
-            packages from anywhere in the world.
-          </p>
-        </v-col>
-      </v-row>
-
+      <template v-if="company">
+        <v-row v-if="showing === 'home'" cols="12" justify="center">
+          <v-col cols="12" md="8">
+            <h1>{{ company.name }}</h1>
+            <p>{{ company.description}}</p>
+            <p>{{ company.number }}</p>
+            <p>{{ company.email }}</p>
+            <p>{{ company.location }}</p>
+          </v-col>
+        </v-row>
+      </template>
       <template v-if="showing === 'packages'" cols="12" justify="center">
 
         <v-row class="my-5">
@@ -228,25 +249,25 @@ router.push({ name: "login" });
 
 
         <v-dialog v-model="addingClerk" width="800">
-        <v-card class="rounded-lg elevation-5">
-          <v-card-title class="headline mb-2">Create Clerk </v-card-title>
-          <v-card-text>
-            <v-text-field v-model="user.firstName" label="First Name" required></v-text-field>
+          <v-card class="rounded-lg elevation-5">
+            <v-card-title class="headline mb-2">Create Clerk </v-card-title>
+            <v-card-text>
+              <v-text-field v-model="user.firstName" label="First Name" required></v-text-field>
 
-            <v-text-field v-model="user.lastName" label="Last Name" required></v-text-field>
+              <v-text-field v-model="user.lastName" label="Last Name" required></v-text-field>
 
-            <v-text-field v-model="user.email" label="Email" required></v-text-field>
-            <v-text-field v-model="user.number" label="Number" required></v-text-field>
+              <v-text-field v-model="user.email" label="Email" required></v-text-field>
+              <v-text-field v-model="user.number" label="Number" required></v-text-field>
 
-            <v-text-field v-model="user.password" label="Password" type="password" required></v-text-field>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn variant="flat" @click="addingClerk = false" color="secondary">Close</v-btn>
-            <v-btn variant="flat" @click="addClerk" color="primary">Create clerk</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+              <v-text-field v-model="user.password" label="Password" type="password" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="flat" @click="addingClerk = false" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="addClerk" color="primary">Create clerk</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
       </template>
       <v-snackbar v-model="snackbar.value" rounded="pill">
