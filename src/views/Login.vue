@@ -25,9 +25,25 @@ const user = ref({
   number: "",
 });
 
-onMounted(async () => {
+const company = ref(null);
 
+onMounted(() => {
+  getCompany();
 });
+
+async function getCompany() {
+  await AdminServices.getCompanyDetails()
+    .then((response) => {
+      // store to local storage
+      localStorage.setItem("company", JSON.stringify(response.data[0]));
+      company.value = response.data[0];
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching company";
+    });
+}
 
 
 async function login() {
