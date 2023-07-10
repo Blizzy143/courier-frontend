@@ -114,6 +114,7 @@ function closeSnackBar() {
 
 async function deleteClerk(temp) {
   temp.user_role = "deleted_clerk";
+  temp.email= temp.email + "_deleted";
   await UserServices.updateUser(temp)
     .then((response) => {
       if (response.status === 200) {
@@ -305,6 +306,7 @@ async function addCourier() {
 
 async function deleteCourier(temp) {
   temp.user_role = "deleted_courier";
+  temp.email= temp.email + "_deleted";
   await UserServices.updateUser(temp)
     .then((response) => {
       if (response.status === 200) {
