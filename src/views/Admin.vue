@@ -127,6 +127,37 @@ async function deleteClerk(temp) {
     })
 }
 
+
+const isupdateCompany = ref(false);
+
+async function showCompanyUpdate() {
+  console.log("------------------")
+  console.log(company.value);
+  isupdateCompany.value = true;
+}
+
+async function closeUpdate() {
+  isupdateCompany.value = false;
+}
+
+
+async function updateCompany(){
+  await AdminServices.updateCompanyDetails(company.value)
+  .then((response) => {
+    if (response.status === 200) {
+      snackbar.value.value = true;
+      snackbar.value.color = "success";
+      snackbar.value.text = "Company updated";
+      isupdateCompany.value = false;
+      getCompany();
+    } else {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Company update failed";
+    }
+  })
+}
+
 async function logout() {
   // clear local storage
   localStorage.clear();
@@ -151,16 +182,24 @@ async function logout() {
 
 
       <template v-if="company">
-        <v-row v-if="showing === 'home'" cols="12" justify="center">
-          <v-col cols="12" md="8">
-            <h1>{{ company.name }}</h1>
-            <p>{{ company.description}}</p>
+
+        <v-card v-if="showing === 'home'" class="rounded-lg elevation-5">
+          <v-col cols="12" md="12">
+            <v-row class="mx-1 my-1">
+
+              <h1>{{ company.name }}</h1>
+              <v-spacer></v-spacer>
+              <v-chip @click="showCompanyUpdate" label color="cyan"> Update</v-chip>
+            </v-row>
+            <p>{{ company.description }}</p>
             <p>{{ company.number }}</p>
             <p>{{ company.email }}</p>
             <p>{{ company.location }}</p>
           </v-col>
-        </v-row>
+        </v-card>
       </template>
+
+
       <template v-if="showing === 'packages'" cols="12" justify="center">
 
         <v-row class="my-5">
@@ -268,8 +307,27 @@ async function logout() {
             </v-card-actions>
           </v-card>
         </v-dialog>
-
       </template>
+
+      <v-dialog v-model="isupdateCompany" width="800">
+          <v-card class="rounded-lg elevation-5">
+            <v-card-title class="headline mb-2">Update company </v-card-title>
+            <v-card-text>
+              <v-text-field v-model="company.name" label="Name" required></v-text-field>
+
+              <v-text-field v-model="company.description" label="Description" required></v-text-field>
+
+              <v-text-field v-model="company.location" label="Location" required></v-text-field>
+              <v-text-field v-model="company.number" label="Number" required></v-text-field>
+              <v-text-field v-model="company.email" label="Email" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="flat" @click="closeUpdate = false" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="updateCompany" color="primary">Update</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       <v-snackbar v-model="snackbar.value" rounded="pill">
         {{ snackbar.text }}
         <template v-slot:actions>
