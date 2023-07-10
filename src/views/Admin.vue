@@ -27,6 +27,7 @@ const user = ref({
 onMounted(async () => {
   getClerks();
   getCompany();
+  getCustomers();
 });
 
 
@@ -131,8 +132,6 @@ async function deleteClerk(temp) {
 const isupdateCompany = ref(false);
 
 async function showCompanyUpdate() {
-  console.log("------------------")
-  console.log(company.value);
   isupdateCompany.value = true;
 }
 
@@ -140,22 +139,21 @@ async function closeUpdate() {
   isupdateCompany.value = false;
 }
 
-
-async function updateCompany(){
+async function updateCompany() {
   await AdminServices.updateCompanyDetails(company.value)
-  .then((response) => {
-    if (response.status === 200) {
-      snackbar.value.value = true;
-      snackbar.value.color = "success";
-      snackbar.value.text = "Company updated";
-      isupdateCompany.value = false;
-      getCompany();
-    } else {
-      snackbar.value.value = true;
-      snackbar.value.color = "error";
-      snackbar.value.text = "Company update failed";
-    }
-  })
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Company updated";
+        isupdateCompany.value = false;
+        getCompany();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Company update failed";
+      }
+    })
 }
 
 async function logout() {
@@ -164,6 +162,97 @@ async function logout() {
   // redirect to login
   router.push({ name: "login" });
 }
+
+
+const addingCustomer = ref(false);
+
+const customer = ref({
+  name: "",
+  number: "",
+  location: "",
+  delivery_instructions: ""
+});
+
+async function addCustomer() {
+  await AdminServices.addCustomer(customer.value)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Customer created";
+        addingCustomer.value = false;
+        getCustomers();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Customer creation failed";
+      }
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Customer creation failed";
+    });
+}
+
+const customers = ref([]);
+
+async function getCustomers() {
+  await AdminServices.getCustomers()
+    .then((response) => {
+      customers.value = response.data;
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching customers";
+    });
+}
+
+async function deleteCustomer(temp) {
+  await AdminServices.deleteCustomer(temp.id)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Customer deleted";
+        getCustomers();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Customer deletion failed";
+      }
+    })
+}
+
+
+const updatingCustomer = ref(false);
+const selectedCustomer = ref(null);
+
+async function showUpdateCustomer(temp) {
+  selectedCustomer.value = temp;
+  updatingCustomer.value = true;
+}
+
+async function updateCustomer() {
+  await AdminServices.updateCustomer(selectedCustomer.value)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Customer updated";
+        updatingCustomer.value = false;
+        getCustomers();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Customer update failed";
+      }
+    })
+}
+
+
+
 </script>
 
 <template>
@@ -309,25 +398,102 @@ async function logout() {
         </v-dialog>
       </template>
 
-      <v-dialog v-model="isupdateCompany" width="800">
+      <template v-if="showing === 'customers'" cols="12" justify="center">
+
+        <v-row class="my-5">
+          <v-col cols="8">
+            <h1>Customers</h1>
+          </v-col>
+          <v-col class="d-flex justify-end" cols="4">
+            <v-btn color="accent" @click="addingCustomer = true">Add</v-btn>
+          </v-col>
+        </v-row>
+        <v-table class="rounded-lg elevation-5">
+          <thead>
+            <tr>
+              <th class="text-left">Id</th>
+              <th class="text-left">Name</th>
+              <th class="text-left">Number</th>
+              <th class="text-left">Location</th>
+              <th class="text-left">Delivery instructions</th>
+
+            </tr>
+          </thead>
+          <tbody v-if="clerks">
+            <tr v-for="temp in customers" :key="temp.id">
+              <td>{{ temp.id }}</td>
+              <td>{{ temp.name }}</td>
+              <td>{{ temp.number }}</td>
+              <td>{{ temp.location }}</td>
+              <td>{{ temp.delivery_instructions }}</td>
+              <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
+              <td> <v-chip label @click="deleteCustomer(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
+
+            </tr>
+          </tbody>
+        </v-table>
+
+
+        <v-dialog v-model="addingCustomer" width="800">
           <v-card class="rounded-lg elevation-5">
-            <v-card-title class="headline mb-2">Update company </v-card-title>
+            <v-card-title class="headline mb-2">Create Customer </v-card-title>
             <v-card-text>
-              <v-text-field v-model="company.name" label="Name" required></v-text-field>
-
-              <v-text-field v-model="company.description" label="Description" required></v-text-field>
-
-              <v-text-field v-model="company.location" label="Location" required></v-text-field>
-              <v-text-field v-model="company.number" label="Number" required></v-text-field>
-              <v-text-field v-model="company.email" label="Email" required></v-text-field>
+              <v-text-field v-model="customer.name" label="Name" required></v-text-field>
+              <v-text-field v-model="customer.number" label="Number" required></v-text-field>
+              <v-text-field v-model="customer.location" label="Location" required></v-text-field>
+              <v-text-field v-model="customer.delivery_instructions" label="Delivery instructions" required></v-text-field>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn variant="flat" @click="closeUpdate = false" color="secondary">Close</v-btn>
-              <v-btn variant="flat" @click="updateCompany" color="primary">Update</v-btn>
+              <v-btn variant="flat" @click="addingCustomer = false" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="addCustomer" color="primary">Submit</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
+      </template>
+
+      <v-dialog v-model="updatingCustomer" width="800">
+          <v-card class="rounded-lg elevation-5">
+            <v-card-title class="headline mb-2">Create Customer </v-card-title>
+            <v-card-text>
+              <v-text-field v-model="selectedCustomer.name" label="Name" required></v-text-field>
+              <v-text-field v-model="selectedCustomer.number" label="Number" required></v-text-field>
+              <v-text-field v-model="selectedCustomer.location" label="Location" required></v-text-field>
+              <v-text-field v-model="selectedCustomer.delivery_instructions" label="Delivery instructions" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="flat" @click="updatingCustomer = false" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="updateCustomer" color="primary">Submit</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+
+
+
+      <v-dialog v-model="isupdateCompany" width="800">
+        <v-card class="rounded-lg elevation-5">
+          <v-card-title class="headline mb-2">Update company </v-card-title>
+          <v-card-text>
+            <v-text-field v-model="company.name" label="Name" required></v-text-field>
+
+            <v-text-field v-model="company.description" label="Description" required></v-text-field>
+
+            <v-text-field v-model="company.location" label="Location" required></v-text-field>
+            <v-text-field v-model="company.number" label="Number" required></v-text-field>
+            <v-text-field v-model="company.email" label="Email" required></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="flat" @click="closeUpdate = false" color="secondary">Close</v-btn>
+            <v-btn variant="flat" @click="updateCompany" color="primary">Update</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
+
       <v-snackbar v-model="snackbar.value" rounded="pill">
         {{ snackbar.text }}
         <template v-slot:actions>
