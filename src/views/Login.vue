@@ -60,6 +60,7 @@ async function login() {
         if (response.status === 200) {
           // save user details to local storage
           localStorage.setItem("user", JSON.stringify(response.data));
+          
           snackbar.value.value = true;
           snackbar.value.color = "success";
           snackbar.value.text = "Login successful";

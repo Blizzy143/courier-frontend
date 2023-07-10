@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import logo from "/icon.svg";
 import UserServices from "../services/UserServices.js";
 import AdminServices from "../services/AdminServices";
+import TicketServices from "../services/TicketServices";
 
 
 const router = useRouter();
@@ -24,12 +25,30 @@ const user = ref({
   user_role: "clerk"
 });
 
+const savedUser = ref(null);
+
 onMounted(async () => {
+  savedUser.value = JSON.parse(localStorage.getItem("user"));
   getClerks();
   getCompany();
   getCustomers();
   getCouriers();
+  getTickets();
 });
+
+const tickets = ref([]);
+
+async function getTickets() {
+  await TicketServices.getTickets()
+    .then((response) => {
+      tickets.value = response.data;
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching tickets";
+    });
+}
 
 
 const company = ref(null)
@@ -53,22 +72,27 @@ const showing = ref("home");
 
 async function openHome() {
   showing.value = "home";
+  getCompany();
 }
 
 async function openPackages() {
   showing.value = "packages";
+  getTickets();
 }
 
 async function openCustomers() {
   showing.value = "customers";
+  getCustomers();
 }
 
 async function openClerks() {
   showing.value = "clerks";
+  getClerks();
 }
 
 async function openCouriers() {
   showing.value = "couriers";
+  getCouriers();
 }
 
 const addingClerk = ref(false);
@@ -357,6 +381,7 @@ async function openAddTicket() {
     <div id="body">
 
       <v-app-bar color="primary" app dark>
+        <span class="mx-5" v-if="savedUser">{{ savedUser.firstName }} {{ savedUser.lastName }}</span>
         <v-spacer></v-spacer>
         <v-btn color="secondary" @click="openHome()">Home</v-btn>
         <v-btn color="secondary" @click="openPackages()">Packages</v-btn>
@@ -398,39 +423,21 @@ async function openAddTicket() {
           <thead>
             <tr>
               <th class="text-left">Id</th>
+              <th class="text-left">Created by</th>
               <th class="text-left">Pick up customer</th>
               <th class="text-left">Delivery customer</th>
               <th class="text-left">Corier</th>
+              <th class="text-left">Status</th>
             </tr>
           </thead>
-          <tbody v-if="trip">
-            <tr v-for="temp in trip.Itineraries" :key="temp.data">
-              <td>Day {{ trip.Itineraries.indexOf(temp) + 1 }}</td>
-              <td>{{ formatDate(temp.date) }}</td>
-              <td>
-                <v-list v-if="temp.Places.length > 0">
-                  <v-list-item v-for="place in temp.Places" :key="place.name">
-                    <v-chip class="mr-1" label color="cyan" prepend-icon="mdi-barley">
-                      {{ place.name }}
-                    </v-chip>
-                  </v-list-item>
-                </v-list>
-
-                <v-chip class="ml-4 mb-2" v-if="user !== null && user.user_type === 'admin'" @click="selectPlace(temp)"
-                  label color="green" prepend-icon="mdi-plus">
-                  Add
-                </v-chip>
-
-              </td>
-              <td>
-                <v-chip v-if="temp.Hotel === null" label @click="selectHotel(temp)" color="cyan" prepend-icon="mdi-bed">
-                  Select hotel
-                </v-chip>
-
-                <v-chip v-else label @click="selectHotel(temp)" color="cyan" prepend-icon="mdi-bed">
-                  {{ temp.Hotel.name }}
-                </v-chip>
-              </td>
+          <tbody v-if="tickets">
+            <tr v-for="temp in tickets" :key="temp.data">
+              <td>{{ temp.id }}</td>
+              <td>{{ temp.creator.firstName }} {{ temp.creator.lastName }}</td>
+              <td>{{ temp.pickup_customer.name }}</td>
+              <td>{{ temp.delivery_customer.name }}</td>
+              <td>{{ temp.assigned_to.firstName }} {{ temp.assigned_to.lastName}}</td>
+              <td>{{ temp.status }}</td>
             </tr>
           </tbody>
         </v-table>
