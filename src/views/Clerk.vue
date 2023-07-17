@@ -53,6 +53,31 @@ async function openAddTicket() {
 function closeSnackBar() {
   snackbar.value.value = false;
 }
+
+async function openEditTicket(ticket) {
+  router.push("edit/"+ticket.id);
+}
+
+async function deleteTicket(ticket) {
+  if(!confirm("Are you sure you want to delete this ticket?"))
+   return;
+  try {
+    const response = await TicketServices.deleteTicket(ticket.id);
+    snackbar.value = {
+      value: true,
+      color: "success",
+      text: "Ticket deleted successfully",
+    };
+    getCourierTickets();
+  } catch (error) {
+    snackbar.value = {
+      value: true,
+      color: "error",
+      text: "Error deleting ticket",
+    };
+  }
+}
+
 </script>
 
 <template>
@@ -83,6 +108,7 @@ function closeSnackBar() {
               <th class="text-left">Delivery customer</th>
               <th class="text-left">Corier</th>
               <th class="text-left">Status</th>
+              <th class="text-left">Actions</th>
             </tr>
           </thead>
           <tbody v-if="tickets">
@@ -93,6 +119,10 @@ function closeSnackBar() {
               <td>{{ temp.delivery_customer.name }}</td>
               <td>{{ temp.assigned_to.firstName }} {{ temp.assigned_to.lastName }}</td>
               <td>{{ temp.status }}</td>
+              <td>
+                <v-btn class="mx-2" color="primary" @click="openEditTicket(temp)">Edit</v-btn>
+                <v-btn class="mx-2" color="error" @click="deleteTicket(temp)">Delete</v-btn>
+              </td>
             </tr>
           </tbody>
         </v-table>
