@@ -55,7 +55,7 @@ function closeSnackBar() {
 }
 
 async function openEditTicket(ticket) {
-  router.push({ name: "ticket", params: { id: ticket.id } });
+  router.push("edit/"+ticket.id);
 }
 
 async function deleteTicket(ticket) {

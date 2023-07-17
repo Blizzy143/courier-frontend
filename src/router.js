@@ -33,6 +33,11 @@ const router = createRouter({
       name: "courier-ticket",
       component: () => import("./views/CourierTicket.vue"),
     },
+    {
+      path: "/edit/:id",
+      name: "edit",
+      component: () => import("./views/EditTicket.vue"),
+    },
   ],
 });
 
