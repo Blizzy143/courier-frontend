@@ -51,6 +51,10 @@ async function logout() {
 function closeSnackBar() {
   snackbar.value.value = false;
 }
+
+function viewTicket(temp) {
+  router.push("/courier-ticket/" + temp.id);
+}
 </script>
 
 <template>
@@ -72,6 +76,7 @@ function closeSnackBar() {
               <th class="text-left">Delivery customer</th>
               <th class="text-left">Corier</th>
               <th class="text-left">Status</th>
+              <th class="text-left">Actions</th>
             </tr>
           </thead>
           <tbody v-if="tickets">
@@ -82,6 +87,7 @@ function closeSnackBar() {
               <td>{{ temp.delivery_customer.name }}</td>
               <td>{{ temp.assigned_to.firstName }} {{ temp.assigned_to.lastName}}</td>
               <td>{{ temp.status }}</td>
+              <td><v-btn @click="viewTicket(temp)" color="primary">View ticket</v-btn></td>
             </tr>
           </tbody>
         </v-table>

@@ -426,7 +426,7 @@ async function openAddTicket() {
               <th class="text-left">Created by</th>
               <th class="text-left">Pick up customer</th>
               <th class="text-left">Delivery customer</th>
-              <th class="text-left">Corier</th>
+              <th class="text-left">Courier</th>
               <th class="text-left">Status</th>
             </tr>
           </thead>

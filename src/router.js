@@ -28,6 +28,11 @@ const router = createRouter({
       name: "clerk",
       component: () => import("./views/Clerk.vue"),
     },
+    {
+      path: "/courier-ticket/:id",
+      name: "courier-ticket",
+      component: () => import("./views/CourierTicket.vue"),
+    },
   ],
 });
 
