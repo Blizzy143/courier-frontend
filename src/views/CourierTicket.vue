@@ -116,6 +116,21 @@ async function updateStatus() {
           <v-text-field readonly variant="outlined" v-model="ticket.quoted_price" label="Quoted price" type="number"
             required></v-text-field>
 
+          <v-text-field readonly variant="outlined" v-model="ticket.picked_up_time" label="Picked up time" 
+            required></v-text-field>
+          <v-text-field readonly variant="outlined" v-model="ticket.delivery_time" label="Delivered time" 
+            required></v-text-field>
+   
+
+          <v-select variant="outlined" v-model="ticket.status" :items="['created', 'Picked up', 'Delivered']"
+            item-text="name" item-value="id" label="Status" return-object required>
+          </v-select>
+
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="updateStatus" variant="flat" class="mr-2" color="primary">Update status</v-btn>
+        </v-card-actions>
     </v-card>
 
     <v-snackbar v-model="snackbar.value" rounded="pill">
