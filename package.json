@@ -19,6 +19,7 @@
     "roboto-fontface": "*",
     "sequelize": "^6.31.1",
     "vue": "^3.2.41",
+    "vue-moment": "^4.1.0",
     "vue-router": "^4.1.6",
     "vuetify": "^3.2.3",
     "vuex": "^4.0.2",
