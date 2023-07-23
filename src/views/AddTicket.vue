@@ -517,7 +517,11 @@ function calculateDistanceToDelivery() {
   let destination_name = deliverycustomer.value.location[12] + deliverycustomer.value.location[0];
   let my_path = path(graph.value, getIdFromName(source_name), getIdFromName(destination_name));
 
-  ticket.value.est_delivery_time = (pickup_blocks + my_path.length) * 3;
+  let est_minutes = (pickup_blocks + my_path.length) * 3;
+   // convert string to date and add est_minutes]
+
+  ticket.value.est_delivery_time = est_minutes;
+  console.log(ticket.value.est_delivery_time);
   ticket.value.est_blocks = pickup_blocks + my_path.length;
   ticket.value.bill_delivery = my_path.length * 1.5;
   ticket.value.quoted_price = (pickup_blocks + my_path.length) * 1.5;
