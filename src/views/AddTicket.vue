@@ -357,11 +357,7 @@ async function addTicket(){
        color: "success",
        text: "Ticket added successfully",
      };
-
-     // sleep for 2 seconds
-      setTimeout(() => {
-        router.back();
-      }, 2000);
+      router.push("/clerk");
    }
  })
   .catch((error) => {
