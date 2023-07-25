@@ -55,21 +55,26 @@ function closeSnackBar() {
 
 
 function calculateBonus(pick_up, delivery_time, est_time, quoted_price){
-  let delivery = moment(delivery_time, "hh:mm");
-  let pick = moment( delivery.format('ddd MMM DD YYYY') +"-"+pick_up, "hh:mm");
+  
+  let delivery = moment(delivery_time);
+  let pick = moment(delivery_time.split(',')[0]+", " +delivery_time.split(',')[1] +", 2023"+ " " + pick_up + ":00");
+  console.log('delivery', delivery)
+  console.log('pick', pick)
   let duration = moment.duration(delivery.diff(pick));
+  console.log(duration.asMinutes());
     if(duration.asMinutes() < parseInt(est_time)) {
       return (quoted_price * 0.1).toFixed(2);
     }
+
   return 0;
 }
 
 async function updateStatus() {
 
   if (ticket.value.status == 'Picked up') {
-    ticket.value.picked_up_time = new Date().toDateString() + " - "+new Date().toLocaleTimeString();
+    ticket.value.picked_up_time = moment().format('LLLL');
   } else if (ticket.value.status == 'Delivered') {
-    ticket.value.delivery_time = new Date().toDateString() + " - "+new Date().toLocaleTimeString();
+    ticket.value.delivery_time = moment().format('LLLL');
     ticket.value.bonus = calculateBonus(ticket.value.pickup_time, ticket.value.delivery_time, ticket.value.est_delivery_time, ticket.value.quoted_price);
   }
   try {
