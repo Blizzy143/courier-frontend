@@ -6,6 +6,10 @@ import logo from "/icon.svg";
 import UserServices from "../services/UserServices.js";
 import AdminServices from "../services/AdminServices";
 import TicketServices from "../services/TicketServices";
+import "../util/table.css";
+import jspdf from "jspdf";
+import autoTable from 'jspdf-autotable'
+
 
 
 const router = useRouter();
@@ -139,7 +143,7 @@ function closeSnackBar() {
 
 async function deleteClerk(temp) {
   temp.user_role = "deleted_clerk";
-  temp.email= temp.email + "_deleted";
+  temp.email = temp.email + "_deleted";
   await UserServices.updateUser(temp)
     .then((response) => {
       if (response.status === 200) {
@@ -331,7 +335,7 @@ async function addCourier() {
 
 async function deleteCourier(temp) {
   temp.user_role = "deleted_courier";
-  temp.email= temp.email + "_deleted";
+  temp.email = temp.email + "_deleted";
   await UserServices.updateUser(temp)
     .then((response) => {
       if (response.status === 200) {
@@ -372,6 +376,31 @@ async function updateCourier() {
 
 async function openAddTicket() {
   router.push({ name: "ticket" });
+}
+const showPreview = ref(false);
+
+
+const customer_orders = ref([]);
+async function printInvoice(temp) {
+  customer_orders.value = [];
+  await TicketServices.getCustomerTickets(temp.id)
+    .then((response) => {
+      customer_orders.value = response.data.filter((item) => item.status === "Delivered");
+      showPreview.value = true;
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching orders";
+    });
+
+}
+
+async function print() {
+  var doc = new jspdf();
+  autoTable(doc, { html: '#my-table' })
+  doc.save('invoice.pdf')
+  showPreview.value = false;
 }
 
 </script>
@@ -436,7 +465,7 @@ async function openAddTicket() {
               <td>{{ temp.creator.firstName }} {{ temp.creator.lastName }}</td>
               <td>{{ temp.pickup_customer.name }}</td>
               <td>{{ temp.delivery_customer.name }}</td>
-              <td>{{ temp.assigned_to.firstName }} {{ temp.assigned_to.lastName}}</td>
+              <td>{{ temp.assigned_to.firstName }} {{ temp.assigned_to.lastName }}</td>
               <td>{{ temp.status }}</td>
             </tr>
           </tbody>
@@ -517,6 +546,10 @@ async function openAddTicket() {
               <th class="text-left">Number</th>
               <th class="text-left">Location</th>
               <th class="text-left">Delivery instructions</th>
+              <th class="text-left">update</th>
+              <th class="text-left">Delete</th>
+              <th class="text-left">Print invoice</th>
+
 
             </tr>
           </thead>
@@ -530,7 +563,8 @@ async function openAddTicket() {
               <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip>
               </td>
               <td> <v-chip label @click="deleteCustomer(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
-
+              <td> <v-chip label @click="printInvoice(temp)" color="green" prepend-icon="mdi-printer">Print
+                  invoice</v-chip></td>
             </tr>
           </tbody>
         </v-table>
@@ -556,25 +590,25 @@ async function openAddTicket() {
 
 
         <v-dialog v-model="updatingCustomer" width="800">
-        <v-card class="rounded-lg elevation-5">
-          <v-card-title class="headline mb-2">Create Customer </v-card-title>
-          <v-card-text>
-            <v-text-field v-model="selectedCustomer.name" label="Name" required></v-text-field>
-            <v-text-field v-model="selectedCustomer.number" label="Number" required></v-text-field>
-            <v-text-field v-model="selectedCustomer.location" label="Location" required></v-text-field>
-            <v-text-field v-model="selectedCustomer.delivery_instructions" label="Delivery instructions"
-              required></v-text-field>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn variant="flat" @click="updatingCustomer = false" color="secondary">Close</v-btn>
-            <v-btn variant="flat" @click="updateCustomer" color="primary">Submit</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+          <v-card class="rounded-lg elevation-5">
+            <v-card-title class="headline mb-2">Create Customer </v-card-title>
+            <v-card-text>
+              <v-text-field v-model="selectedCustomer.name" label="Name" required></v-text-field>
+              <v-text-field v-model="selectedCustomer.number" label="Number" required></v-text-field>
+              <v-text-field v-model="selectedCustomer.location" label="Location" required></v-text-field>
+              <v-text-field v-model="selectedCustomer.delivery_instructions" label="Delivery instructions"
+                required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="flat" @click="updatingCustomer = false" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="updateCustomer" color="primary">Submit</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-      </template> 
-      
+      </template>
+
       <template v-if="showing === 'couriers'" cols="12" justify="center">
 
         <v-row class="my-5">
@@ -634,21 +668,21 @@ async function openAddTicket() {
 
 
         <v-dialog v-model="updatingCouriers" width="800">
-        <v-card class="rounded-lg elevation-5">
-          <v-card-title class="headline mb-2">Update Courier </v-card-title>
-          <v-card-text>
+          <v-card class="rounded-lg elevation-5">
+            <v-card-title class="headline mb-2">Update Courier </v-card-title>
+            <v-card-text>
               <v-text-field v-model="selectedCourier.firstName" label="First Name" required></v-text-field>
               <v-text-field v-model="selectedCourier.lastName" label="Last Name" required></v-text-field>
               <v-text-field v-model="selectedCourier.email" label="Email" required></v-text-field>
               <v-text-field v-model="selectedCourier.number" label="Number" required></v-text-field>
             </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn variant="flat" @click="updatingCouriers = false" color="secondary">Close</v-btn>
-            <v-btn variant="flat" @click="updateCourier" color="primary">Submit</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="flat" @click="updatingCouriers = false" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="updateCourier" color="primary">Submit</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
       </template>
 
@@ -672,6 +706,47 @@ async function openAddTicket() {
         </v-card>
       </v-dialog>
 
+      <v-dialog v-model="showPreview">
+        <v-card class="rounded-lg elevation-5">
+          <v-card-title class="headline mb-2">Customer invoice </v-card-title>
+          <v-card-text>
+            <table class="elevation-5" id="my-table">
+              <thead>
+                <tr>
+                  <th class="text-left">ID</th>
+                  <th class="text-left">Created by</th>
+                  <th class="text-left">Pickup customer</th>
+                  <th class="text-left">Delivery customer</th>
+                  <th class="text-left">Courier</th>
+                  <th class="text-left">Bill</th>
+                  <th class="text-left">Bonus</th>
+                  <th class="text-left">Total</th>
+
+                </tr>
+              </thead>
+              <tbody v-if="customer_orders">
+                <tr v-for="temp in customer_orders" :key="temp.id">
+                  <td>{{ temp.id }}</td>
+                  <td>{{ temp.creator.firstName }} {{ temp.creator.lastName }}</td>
+                  <td>{{ temp.pickup_customer.name }}</td>
+                  <td>{{ temp.delivery_customer.name }}</td>
+                  <td>{{ temp.assigned_to.firstName }} {{ temp.assigned_to.lastName }}</td>
+                  <td>${{ temp.quoted_price }}</td>
+                  <td>${{ temp.bonus }}</td>
+                  <td>${{ parseFloat(temp.quoted_price.replace('$')) + parseFloat(temp.bonus.replace('$')) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn variant="flat" @click="showPreview = false" color="secondary">Close</v-btn>
+            <v-btn variant="flat" @click="print" color="primary">Print</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
       <v-snackbar v-model="snackbar.value" rounded="pill">
         {{ snackbar.text }}
         <template v-slot:actions>
@@ -682,4 +757,5 @@ async function openAddTicket() {
       </v-snackbar>
 
     </div>
-  </v-container></template>
+  </v-container>
+</template>

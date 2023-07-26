@@ -25,6 +25,10 @@ export default {
 
   getCourierTickets(id) {
     return apiClient.get("tickets/courier/" + id);
+  },
+
+  getCustomerTickets(id) {
+    return apiClient.get("tickets/customer/" + id);
   }
   
 
