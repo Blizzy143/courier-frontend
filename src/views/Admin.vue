@@ -100,6 +100,18 @@ async function openCouriers() {
 }
 
 const addingClerk = ref(false);
+const editClerk = ref(false);
+const selectedClerk = ref(null);
+
+async function openEditClerk(temp) {
+  selectedClerk.value = temp;
+  editClerk.value = true;
+}
+
+async function closeEditClerk() {
+  editClerk.value = false;
+}
+
 
 async function addClerk() {
   await UserServices.addUser(user.value)
@@ -122,6 +134,26 @@ async function addClerk() {
       snackbar.value.text = "Clerk creation failed";
     });
 }
+
+
+async function updateClerk(){
+  await UserServices.updateUser(selectedClerk.value)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Clerk updated";
+        editClerk.value = false;
+        getClerks();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Clerk update failed";
+      }
+    })
+
+}
+
 
 const clerks = ref([]);
 
@@ -499,6 +531,7 @@ async function print() {
               <td>{{ temp.firstName }} {{ temp.lastName }}</td>
               <td>{{ temp.email }}</td>
               <td>{{ temp.number }}</td>
+              <td> <v-chip label @click="openEditClerk(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
               <td> <v-chip label @click="deleteClerk(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
 
             </tr>
@@ -526,6 +559,24 @@ async function print() {
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <v-dialog v-model="editClerk" width="800">
+          <v-card class="rounded-lg elevation-5">
+            <v-card-title class="headline mb-2">Update clerk </v-card-title>
+            <v-card-text>
+              <v-text-field v-model="selectedClerk.firstName" label="First Name" required></v-text-field>
+              <v-text-field v-model="selectedClerk.lastName" label="Last Name" required></v-text-field>
+              <v-text-field v-model="selectedClerk.email" label="Email" required></v-text-field>
+              <v-text-field v-model="selectedClerk.number" label="Number" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="flat" @click="closeEditClerk" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="updateClerk" color="primary">Submit</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
       </template>
 
       <template v-if="showing === 'customers'" cols="12" justify="center">
