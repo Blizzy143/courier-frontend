@@ -428,6 +428,22 @@ async function printInvoice(temp) {
 
 }
 
+
+async function printCourierInvoice(temp) {
+  customer_orders.value = [];
+  await TicketServices.getTickets()
+    .then((response) => {
+      customer_orders.value = response.data.filter((item) => item.assignedToId === temp.id && item.status === "Delivered");
+      showPreview.value = true;
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching orders";
+    });
+
+}
+
 async function print() {
   var doc = new jspdf();
   autoTable(doc, { html: '#my-table' })
@@ -522,6 +538,8 @@ async function print() {
               <th class="text-left">Name</th>
               <th class="text-left">Mail</th>
               <th class="text-left">Number</th>
+              <th class="text-left">update</th>
+              <th class="text-left">Delete</th>
 
             </tr>
           </thead>
@@ -611,11 +629,9 @@ async function print() {
               <td>{{ temp.number }}</td>
               <td>{{ temp.location }}</td>
               <td>{{ temp.delivery_instructions }}</td>
-              <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip>
-              </td>
+              <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
               <td> <v-chip label @click="deleteCustomer(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
-              <td> <v-chip label @click="printInvoice(temp)" color="green" prepend-icon="mdi-printer">Print
-                  invoice</v-chip></td>
+              <td> <v-chip label @click="printInvoice(temp)" color="green" prepend-icon="mdi-printer">Print invoice</v-chip></td>
             </tr>
           </tbody>
         </v-table>
@@ -677,7 +693,9 @@ async function print() {
               <th class="text-left">Name</th>
               <th class="text-left">Email</th>
               <th class="text-left">Number</th>
-
+              <th class="text-left">update</th>
+              <th class="text-left">Delete</th>
+              <th class="text-left">Print invoice</th>
             </tr>
           </thead>
           <tbody v-if="couriers">
@@ -687,10 +705,9 @@ async function print() {
               <td>{{ temp.email }}</td>
               <td>{{ temp.number }}</td>
 
-              <td> <v-chip label @click="showUpdateCourier(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip>
-              </td>
+              <td> <v-chip label @click="showUpdateCourier(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
               <td> <v-chip label @click="deleteCourier(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
-
+              <td> <v-chip label @click="printCourierInvoice(temp)" color="green" prepend-icon="mdi-printer">Print invoice</v-chip></td>
             </tr>
           </tbody>
         </v-table>
