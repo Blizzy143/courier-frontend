@@ -100,6 +100,18 @@ async function openCouriers() {
 }
 
 const addingClerk = ref(false);
+const editClerk = ref(false);
+const selectedClerk = ref(null);
+
+async function openEditClerk(temp) {
+  selectedClerk.value = temp;
+  editClerk.value = true;
+}
+
+async function closeEditClerk() {
+  editClerk.value = false;
+}
+
 
 async function addClerk() {
   await UserServices.addUser(user.value)
@@ -122,6 +134,26 @@ async function addClerk() {
       snackbar.value.text = "Clerk creation failed";
     });
 }
+
+
+async function updateClerk(){
+  await UserServices.updateUser(selectedClerk.value)
+    .then((response) => {
+      if (response.status === 200) {
+        snackbar.value.value = true;
+        snackbar.value.color = "success";
+        snackbar.value.text = "Clerk updated";
+        editClerk.value = false;
+        getClerks();
+      } else {
+        snackbar.value.value = true;
+        snackbar.value.color = "error";
+        snackbar.value.text = "Clerk update failed";
+      }
+    })
+
+}
+
 
 const clerks = ref([]);
 
@@ -205,6 +237,29 @@ const customer = ref({
 });
 
 async function addCustomer() {
+
+  // validate customer
+  if (customer.value.name === "") {
+    snackbar.value.value = true;
+    snackbar.value.color = "error";
+    snackbar.value.text = "Name is required";
+    return;
+  }
+  if (customer.value.number === "") {
+    snackbar.value.value = true;
+    snackbar.value.color = "error";
+    snackbar.value.text = "Number is required";
+    return;
+  }
+  if(selectedAvenue.value === "" || selectedStreet.value === "") {
+    snackbar.value.value = true;
+    snackbar.value.color = "error";
+    snackbar.value.text = "Location is required";
+    return;
+  }
+
+  customer.value.location = selectedAvenue.value + " And " + selectedStreet.value;
+
   await AdminServices.addCustomer(customer.value)
     .then((response) => {
       if (response.status === 200) {
@@ -396,12 +451,61 @@ async function printInvoice(temp) {
 
 }
 
+
+async function printCourierInvoice(temp) {
+  customer_orders.value = [];
+  await TicketServices.getTickets()
+    .then((response) => {
+      customer_orders.value = response.data.filter((item) => item.assignedToId === temp.id && item.status === "Delivered");
+      showPreview.value = true;
+    })
+    .catch((error) => {
+      snackbar.value.value = true;
+      snackbar.value.color = "error";
+      snackbar.value.text = "Error fetching orders";
+    });
+
+}
+
 async function print() {
   var doc = new jspdf();
   autoTable(doc, { html: '#my-table' })
   doc.save('invoice.pdf')
   showPreview.value = false;
 }
+
+async function openEditTicket(ticket) {
+  router.push("edit/" + ticket.id);
+}
+
+async function deleteTicket(ticket) {
+  if (!confirm("Are you sure you want to delete this ticket?"))
+    return;
+  try {
+    const response = await TicketServices.deleteTicket(ticket.id);
+    snackbar.value = {
+      value: true,
+      color: "success",
+      text: "Ticket deleted successfully",
+    };
+    getTickets();
+  } catch (error) {
+    snackbar.value = {
+      value: true,
+      color: "error",
+      text: "Error deleting ticket",
+    };
+  }
+}
+
+
+const avenues = ref(["1st Ave", "2nd Ave", "3rd Ave", "4th Ave", "5th Ave", "6th Ave", "7th Ave"]);
+const selectedAvenue = ref("");
+const streets = ref(["A street", "B street","C street","D street","E street","F street","G street", ]);
+const selectedStreet = ref("");
+
+
+
 
 </script>
 
@@ -413,7 +517,7 @@ async function print() {
         <span class="mx-5" v-if="savedUser">{{ savedUser.firstName }} {{ savedUser.lastName }}</span>
         <v-spacer></v-spacer>
         <v-btn color="secondary" @click="openHome()">Home</v-btn>
-        <v-btn color="secondary" @click="openPackages()">Packages</v-btn>
+        <v-btn color="secondary" @click="openPackages()">Tickets</v-btn>
         <v-btn color="secondary" @click="openCustomers()">Customers</v-btn>
         <v-btn color="secondary" @click="openClerks()">Clerks</v-btn>
         <v-btn color="secondary" @click="openCouriers()">Couriers</v-btn>
@@ -442,7 +546,7 @@ async function print() {
 
         <v-row class="my-5">
           <v-col cols="8">
-            <h1>Packages</h1>
+            <h1>Tickets</h1>
           </v-col>
           <v-col class="d-flex justify-end" cols="4">
             <v-btn color="accent" @click="openAddTicket">Add</v-btn>
@@ -457,6 +561,9 @@ async function print() {
               <th class="text-left">Delivery customer</th>
               <th class="text-left">Courier</th>
               <th class="text-left">Status</th>
+              <th class="text-left">Edit</th>
+              <th class="text-left">Delete</th>
+              
             </tr>
           </thead>
           <tbody v-if="tickets">
@@ -467,6 +574,11 @@ async function print() {
               <td>{{ temp.delivery_customer.name }}</td>
               <td>{{ temp.assigned_to.firstName }} {{ temp.assigned_to.lastName }}</td>
               <td>{{ temp.status }}</td>
+              <td>
+                <v-btn class="mx-2" color="primary" @click="openEditTicket(temp)">Edit</v-btn>
+              </td>
+              <td> <v-btn class="mx-2" color="error" @click="deleteTicket(temp)">Delete</v-btn>
+              </td>
             </tr>
           </tbody>
         </v-table>
@@ -490,6 +602,8 @@ async function print() {
               <th class="text-left">Name</th>
               <th class="text-left">Mail</th>
               <th class="text-left">Number</th>
+              <th class="text-left">update</th>
+              <th class="text-left">Delete</th>
 
             </tr>
           </thead>
@@ -499,6 +613,7 @@ async function print() {
               <td>{{ temp.firstName }} {{ temp.lastName }}</td>
               <td>{{ temp.email }}</td>
               <td>{{ temp.number }}</td>
+              <td> <v-chip label @click="openEditClerk(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
               <td> <v-chip label @click="deleteClerk(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
 
             </tr>
@@ -526,6 +641,24 @@ async function print() {
             </v-card-actions>
           </v-card>
         </v-dialog>
+
+        <v-dialog v-model="editClerk" width="800">
+          <v-card class="rounded-lg elevation-5">
+            <v-card-title class="headline mb-2">Update clerk </v-card-title>
+            <v-card-text>
+              <v-text-field v-model="selectedClerk.firstName" label="First Name" required></v-text-field>
+              <v-text-field v-model="selectedClerk.lastName" label="Last Name" required></v-text-field>
+              <v-text-field v-model="selectedClerk.email" label="Email" required></v-text-field>
+              <v-text-field v-model="selectedClerk.number" label="Number" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn variant="flat" @click="closeEditClerk" color="secondary">Close</v-btn>
+              <v-btn variant="flat" @click="updateClerk" color="primary">Submit</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
       </template>
 
       <template v-if="showing === 'customers'" cols="12" justify="center">
@@ -560,11 +693,9 @@ async function print() {
               <td>{{ temp.number }}</td>
               <td>{{ temp.location }}</td>
               <td>{{ temp.delivery_instructions }}</td>
-              <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip>
-              </td>
+              <td> <v-chip label @click="showUpdateCustomer(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
               <td> <v-chip label @click="deleteCustomer(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
-              <td> <v-chip label @click="printInvoice(temp)" color="green" prepend-icon="mdi-printer">Print
-                  invoice</v-chip></td>
+              <td> <v-chip label @click="printInvoice(temp)" color="green" prepend-icon="mdi-printer">Print invoice</v-chip></td>
             </tr>
           </tbody>
         </v-table>
@@ -575,8 +706,15 @@ async function print() {
             <v-card-title class="headline mb-2">Create Customer </v-card-title>
             <v-card-text>
               <v-text-field v-model="customer.name" label="Name" required></v-text-field>
-              <v-text-field v-model="customer.number" label="Number" required></v-text-field>
-              <v-text-field v-model="customer.location" label="Location" required></v-text-field>
+              <v-text-field v-model="customer.number" label="Number" type="number"  required></v-text-field>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select v-model="selectedAvenue" :items="avenues" item-title="name" item-value="name" label="Select Avenue" return-object required></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-select v-model="selectedStreet" :items="streets" item-title="name" item-value="name" label="Select Street" return-object required></v-select>
+                </v-col>
+              </v-row>
               <v-text-field v-model="customer.delivery_instructions" label="Delivery instructions"
                 required></v-text-field>
             </v-card-text>
@@ -626,7 +764,9 @@ async function print() {
               <th class="text-left">Name</th>
               <th class="text-left">Email</th>
               <th class="text-left">Number</th>
-
+              <th class="text-left">update</th>
+              <th class="text-left">Delete</th>
+              <th class="text-left">Print invoice</th>
             </tr>
           </thead>
           <tbody v-if="couriers">
@@ -636,10 +776,9 @@ async function print() {
               <td>{{ temp.email }}</td>
               <td>{{ temp.number }}</td>
 
-              <td> <v-chip label @click="showUpdateCourier(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip>
-              </td>
+              <td> <v-chip label @click="showUpdateCourier(temp)" color="cyan" prepend-icon="mdi-pencil">Update</v-chip></td>
               <td> <v-chip label @click="deleteCourier(temp)" color="red" prepend-icon="mdi-delete">Delete</v-chip></td>
-
+              <td> <v-chip label @click="printCourierInvoice(temp)" color="green" prepend-icon="mdi-printer">Print invoice</v-chip></td>
             </tr>
           </tbody>
         </v-table>

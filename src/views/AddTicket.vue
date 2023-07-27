@@ -31,278 +31,16 @@ async function createGraphFromJson() {
 }
 
 
-async function createGraph() {
-
-  let A1 = new Node(0, "A1")
-  let A2 = new Node(1, "A2")
-  let A3 = new Node(2, "A3")
-  let A4 = new Node(3, "A4")
-  let A5 = new Node(4, "A5")
-  let A6 = new Node(5, "A6")
-  let A7 = new Node(6, "A7")
-
-  let B1 = new Node(7, "B1")
-  let B2 = new Node(8, "B2")
-  let B3 = new Node(9, "B3")
-  let B4 = new Node(10, "B4")
-  let B5 = new Node(11, "B5")
-  let B6 = new Node(12, "B6")
-  let B7 = new Node(13, "B7")
-
-  let C1 = new Node(14, "C1")
-  let C2 = new Node(15, "C2")
-  let C3 = new Node(16, "C3")
-  let C4 = new Node(17, "C4")
-  let C5 = new Node(18, "C5")
-  let C6 = new Node(19, "C6")
-  let C7 = new Node(20, "C7")
-
-  let D1 = new Node(21, "D1")
-  let D2 = new Node(22, "D2")
-  let D3 = new Node(23, "D3")
-  let D4 = new Node(24, "D4")
-  let D5 = new Node(25, "D5")
-  let D6 = new Node(26, "D6")
-  let D7 = new Node(27, "D7")
-
-  let E1 = new Node(28, "E1")
-  let E2 = new Node(29, "E2")
-  let E3 = new Node(30, "E3")
-  let E4 = new Node(31, "E4")
-  let E5 = new Node(32, "E5")
-  let E6 = new Node(33, "E6")
-  let E7 = new Node(34, "E7")
-
-  let F1 = new Node(35, "F1")
-  let F2 = new Node(36, "F2")
-  let F3 = new Node(37, "F3")
-  let F4 = new Node(38, "F4")
-  let F5 = new Node(39, "F5")
-  let F6 = new Node(40, "F6")
-  let F7 = new Node(41, "F7")
-
-  let G1 = new Node(42, "G1")
-  let G2 = new Node(43, "G2")
-  let G3 = new Node(44, "G3")
-  let G4 = new Node(45, "G4")
-  let G5 = new Node(46, "G5")
-  let G6 = new Node(47, "G6")
-  let G7 = new Node(48, "G7")
-
-  A1.Add_child(A2.vertexNumber, 1)
-
-  A2.Add_child(A3.vertexNumber, 1)
-  A2.Add_child(B2.vertexNumber, 1)
-
-  A3.Add_child(A4.vertexNumber, 1)
-
-  A4.Add_child(A5.vertexNumber, 1)
-  A4.Add_child(B4.vertexNumber, 1)
-
-  A5.Add_child(A6.vertexNumber, 1)
-
-  A6.Add_child(A7.vertexNumber, 1)
-  A6.Add_child(B6.vertexNumber, 1)
-
-  B1.Add_child(A1.vertexNumber, 1)
-
-  B2.Add_child(A2.vertexNumber, 1)
-  B2.Add_child(B1.vertexNumber, 1)
-  B2.Add_child(C2.vertexNumber, 1)
-
-  B3.Add_child(B2.vertexNumber, 1)
-  B3.Add_child(A3.vertexNumber, 1)
-
-  B4.Add_child(B3.vertexNumber, 1)
-  B4.Add_child(C4.vertexNumber, 1)
-
-  B5.Add_child(B4.vertexNumber, 1)
-  B5.Add_child(A5.vertexNumber, 1)
-
-  B6.Add_child(B5.vertexNumber, 1)
-  B6.Add_child(C6.vertexNumber, 1)
-  B6.Add_child(A6.vertexNumber, 1)
-
-  B7.Add_child(B6.vertexNumber, 1)
-  B7.Add_child(A7.vertexNumber, 1)
-
-  C1.Add_child(B1.vertexNumber, 1)
-  C1.Add_child(C2.vertexNumber, 1)
-
-  C2.Add_child(C3.vertexNumber, 1)
-  C2.Add_child(B2.vertexNumber, 1)
-  C2.Add_child(D2.vertexNumber, 1)
-
-  C3.Add_child(C4.vertexNumber, 1)
-  C3.Add_child(B3.vertexNumber, 1)
-
-  C4.Add_child(C5.vertexNumber, 1)
-  C4.Add_child(D4.vertexNumber, 1)
-
-  C5.Add_child(C6.vertexNumber, 1)
-  C5.Add_child(B5.vertexNumber, 1)
-
-  C6.Add_child(C7.vertexNumber, 1)
-  C6.Add_child(B6.vertexNumber, 1)
-  C6.Add_child(D6.vertexNumber, 1)
-
-  C7.Add_child(B7.vertexNumber, 1)
-
-  D1.Add_child(C1.vertexNumber, 1)
-  D1.Add_child(D2.vertexNumber, 1)
-
-  D2.Add_child(D1.vertexNumber, 1)
-  D2.Add_child(D3.vertexNumber, 1)
-  D2.Add_child(C2.vertexNumber, 1)
-  D2.Add_child(E2.vertexNumber, 1)
-
-  D3.Add_child(D2.vertexNumber, 1)
-  D3.Add_child(D4.vertexNumber, 1)
-  D3.Add_child(C3.vertexNumber, 1)
-
-  D4.Add_child(D3.vertexNumber, 1)
-  D4.Add_child(D5.vertexNumber, 1)
-  D4.Add_child(E4.vertexNumber, 1)
-
-  D5.Add_child(D4.vertexNumber, 1)
-  D5.Add_child(D6.vertexNumber, 1)
-  D5.Add_child(C5.vertexNumber, 1)
-
-  D6.Add_child(D5.vertexNumber, 1)
-  D6.Add_child(D7.vertexNumber, 1)
-  D6.Add_child(C6.vertexNumber, 1)
-  D6.Add_child(E6.vertexNumber, 1)
-
-  D7.Add_child(D6.vertexNumber, 1)
-  D7.Add_child(C7.vertexNumber, 1)
-
-  E1.Add_child(D1.vertexNumber, 1)
-  E1.Add_child(E2.vertexNumber, 1)
-
-  E2.Add_child(E3.vertexNumber, 1)
-  E2.Add_child(D2.vertexNumber, 1)
-  E2.Add_child(F2.vertexNumber, 1)
-
-  E3.Add_child(E4.vertexNumber, 1)
-  E3.Add_child(D3.vertexNumber, 1)
-
-  E4.Add_child(E5.vertexNumber, 1)
-  E4.Add_child(F4.vertexNumber, 1)
-
-  E5.Add_child(E6.vertexNumber, 1)
-  E5.Add_child(D5.vertexNumber, 1)
-
-  E6.Add_child(E7.vertexNumber, 1)
-  E6.Add_child(D6.vertexNumber, 1)
-  E6.Add_child(F6.vertexNumber, 1)
-
-  E7.Add_child(D7.vertexNumber, 1)
-
-  F1.Add_child(E1.vertexNumber, 1)
-
-  F2.Add_child(F1.vertexNumber, 1)
-  F2.Add_child(E2.vertexNumber, 1)
-  F2.Add_child(G2.vertexNumber, 1)
-
-  F3.Add_child(F2.vertexNumber, 1)
-  F3.Add_child(E3.vertexNumber, 1)
-
-  F4.Add_child(F3.vertexNumber, 1)
-  F4.Add_child(G4.vertexNumber, 1)
-
-  F5.Add_child(F4.vertexNumber, 1)
-  F5.Add_child(E5.vertexNumber, 1)
-
-  F6.Add_child(F5.vertexNumber, 1)
-  F6.Add_child(E6.vertexNumber, 1)
-  F6.Add_child(G6.vertexNumber, 1)
-
-  F7.Add_child(F6.vertexNumber, 1)
-  F7.Add_child(E7.vertexNumber, 1)
-
-  G1.Add_child(F1.vertexNumber, 1)
-  G1.Add_child(G2.vertexNumber, 1)
-
-  G2.Add_child(G3.vertexNumber, 1)
-  G2.Add_child(F2.vertexNumber, 1)
-
-  G3.Add_child(G4.vertexNumber, 1)
-  G3.Add_child(F3.vertexNumber, 1)
-
-  G4.Add_child(G5.vertexNumber, 1)
-
-  G5.Add_child(G6.vertexNumber, 1)
-  G5.Add_child(F5.vertexNumber, 1)
-
-  G6.Add_child(G7.vertexNumber, 1)
-  G6.Add_child(F6.vertexNumber, 1)
-
-  G7.Add_child(F7.vertexNumber, 1)
-
-  graph.value.push(A1)
-  graph.value.push(A2)
-  graph.value.push(A3)
-  graph.value.push(A4)
-  graph.value.push(A5)
-  graph.value.push(A6)
-  graph.value.push(A7)
-
-  graph.value.push(B1)
-  graph.value.push(B2)
-  graph.value.push(B3)
-  graph.value.push(B4)
-  graph.value.push(B5)
-  graph.value.push(B6)
-  graph.value.push(B7)
-
-  graph.value.push(C1)
-  graph.value.push(C2)
-  graph.value.push(C3)
-  graph.value.push(C4)
-  graph.value.push(C5)
-  graph.value.push(C6)
-  graph.value.push(C7)
-
-  graph.value.push(D1)
-  graph.value.push(D2)
-  graph.value.push(D3)
-  graph.value.push(D4)
-  graph.value.push(D5)
-  graph.value.push(D6)
-  graph.value.push(D7)
-
-  graph.value.push(E1)
-  graph.value.push(E2)
-  graph.value.push(E3)
-  graph.value.push(E4)
-  graph.value.push(E5)
-  graph.value.push(E6)
-  graph.value.push(E7)
-
-  graph.value.push(F1)
-  graph.value.push(F2)
-  graph.value.push(F3)
-  graph.value.push(F4)
-  graph.value.push(F5)
-  graph.value.push(F6)
-  graph.value.push(F7)
-
-  graph.value.push(G1)
-  graph.value.push(G2)
-  graph.value.push(G3)
-  graph.value.push(G4)
-  graph.value.push(G5)
-  graph.value.push(G6)
-  graph.value.push(G7)
-
-}
-
 onMounted(() => {
   savedUser.value = JSON.parse(localStorage.getItem("user"));
   getCustomers();
   getCouriers();
   createGraphFromJson();
 });
+
+async function back() {
+  router.back();
+}
 
 const customers = ref([]);
 const couriers = ref([]);
@@ -317,7 +55,7 @@ async function getCustomers() {
 async function getCouriers() {
   const response = await UserServices.getCouriers();
   if (response.status === 200) {
-    couriers.value = response.data;
+    couriers.value = response.data.filter((courier) => courier.status === "Available");
   }
 }
 
@@ -355,7 +93,6 @@ async function addTicket() {
     };
     return;
   }
-
   ticket.value.pickupCustomerId = pickupcustomer.value.id;
   ticket.value.deliveryCustomerId = deliverycustomer.value.id;
   ticket.value.creatorId = savedUser.value.id;
@@ -369,7 +106,14 @@ async function addTicket() {
           color: "success",
           text: "Ticket added successfully",
         };
-        router.push("/clerk");
+        // sleep for 2 seconds
+        setTimeout(() => {
+          if (savedUser.value.user_role === "clerk")
+            router.push({ name: "clerk" });
+          else if (savedUser.value.user_role === "admin")
+            router.push({ name: "admin" });
+        }, 2000);
+
       }
     })
     .catch((error) => {
@@ -529,7 +273,6 @@ function calculateDistanceToDelivery() {
   // convert string to date and add est_minutes]
 
   ticket.value.est_delivery_time = est_minutes;
-  console.log(ticket.value.est_delivery_time);
   ticket.value.est_blocks = pickup_blocks + my_path.length;
   ticket.value.bill_delivery = my_path.length * 1.5;
   ticket.value.quoted_price = (pickup_blocks + my_path.length) * 1.5;
@@ -584,19 +327,20 @@ function calculateDistanceBack() {
         <v-card-title class="headline mb-2">
         </v-card-title>
         <v-card-text>
-          <v-text-field readonly variant="outlined" v-model="ticket.bill_pickup" label="Pickup Bill" type="number"
+          <v-text-field readonly variant="solo" v-model="ticket.bill_pickup" label="Pickup Bill" type="number"
             required></v-text-field>
-          <v-text-field readonly variant="outlined" v-model="ticket.est_delivery_time" label="Estimated delivery Time"
+          <v-text-field readonly variant="solo" v-model="ticket.est_delivery_time" label="Estimated delivery Time"
             required></v-text-field>
-          <v-text-field readonly variant="outlined" v-model="ticket.bill_delivery" label="Delivery Bill" type="number"
+          <v-text-field readonly variant="solo" v-model="ticket.bill_delivery" label="Delivery Bill" type="number"
             required></v-text-field>
-          <v-text-field readonly variant="outlined" v-model="ticket.est_blocks" label="Estimated blocks" type="number"
+          <v-text-field readonly variant="solo" v-model="ticket.est_blocks" label="Estimated blocks" type="number"
             required></v-text-field>
-          <v-text-field readonly variant="outlined" v-model="ticket.quoted_price" label="Quoted price" type="number"
+          <v-text-field readonly variant="solo" v-model="ticket.quoted_price" label="Quoted price" type="number"
             required></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn @click="router.back" variant="flat" class="mr-2" color="secondary">Cancel</v-btn>
           <v-btn @click="addTicket" variant="flat" class="mr-2" color="primary">Create ticket</v-btn>
         </v-card-actions>
       </v-card>
