@@ -38,6 +38,10 @@ onMounted(() => {
   createGraphFromJson();
 });
 
+async function back() {
+  router.back();
+}
+
 const customers = ref([]);
 const couriers = ref([]);
 
@@ -51,7 +55,7 @@ async function getCustomers() {
 async function getCouriers() {
   const response = await UserServices.getCouriers();
   if (response.status === 200) {
-    couriers.value = response.data;
+    couriers.value = response.data.filter((courier) => courier.status === "Available");
   }
 }
 
@@ -89,7 +93,6 @@ async function addTicket() {
     };
     return;
   }
-
   ticket.value.pickupCustomerId = pickupcustomer.value.id;
   ticket.value.deliveryCustomerId = deliverycustomer.value.id;
   ticket.value.creatorId = savedUser.value.id;
@@ -103,7 +106,14 @@ async function addTicket() {
           color: "success",
           text: "Ticket added successfully",
         };
-        router.push("/clerk");
+        // sleep for 2 seconds
+        setTimeout(() => {
+          if (savedUser.value.user_role === "clerk")
+            router.push({ name: "clerk" });
+          else if (savedUser.value.user_role === "admin")
+            router.push({ name: "admin" });
+        }, 2000);
+
       }
     })
     .catch((error) => {
@@ -263,7 +273,6 @@ function calculateDistanceToDelivery() {
   // convert string to date and add est_minutes]
 
   ticket.value.est_delivery_time = est_minutes;
-  console.log(ticket.value.est_delivery_time);
   ticket.value.est_blocks = pickup_blocks + my_path.length;
   ticket.value.bill_delivery = my_path.length * 1.5;
   ticket.value.quoted_price = (pickup_blocks + my_path.length) * 1.5;
